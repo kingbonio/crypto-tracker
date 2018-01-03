@@ -1,13 +1,13 @@
-const request = require('request-promise');
-const coins = require("./config/coins.json");
+import * as request from 'browser-request';
+import * as coins from "./config/coins.json";
 
-
+const uri = "https://api.coinmarketcap.com/v1/ticker/";
 const currentPrices = [];
 const pricePromises = [];
+const displayDiv = document.getElementById("display");
 
 async function requestCoinData(coin){
-    return request(coin.uri)
-    .then(results => {
+    return request(uri + coin.name, results => {
         results = JSON.parse(results);
         currentPrices.push({ name: coin.name, price: results[0].price_usd });
         for (let i = 0; i < coins.length; i++) {
@@ -15,13 +15,10 @@ async function requestCoinData(coin){
                 coins[i].currentPrice = results[0].price_usd;
             }
         }
-    })
-    .catch(() => {
-         return "error retrieving data";
-    })
+    });
 }
 
-function calculateProfit(currentPrice) {
+function calculateStatistics(currentPrice) {
     for (let i = 0; i < coins.length; i++) {
         if (coins[i].name === currentPrice.name) {
             let coin = coins[i];
@@ -31,11 +28,12 @@ function calculateProfit(currentPrice) {
             coin.changeInValue = parseFloat(changeInValue).toFixed(5);
             coin.originalValue = parseFloat(coin.purchasePrice * coin.volume).toFixed(2);
             coin.currentValue = parseFloat(coin.currentPrice * coin.volume).toFixed(2);
-            coin.profitMade = parseFloat(profitMade - coin.originalValue).toFixed(2);
+            coin.profitMade = parseFloat(coin.currentValue - coin.originalValue).toFixed(2);
         }
     }
 }
 
+displayDiv.innerHTML += "Collecting data...\n";
 
 for (let i = 0; i < coins.length; i++) {
     pricePromises.push(requestCoinData(coins[i]));
@@ -45,23 +43,23 @@ Promise.all(pricePromises)
     .then(prices => {
         let totalProfit = 0;
         for (let i = 0; i < currentPrices.length; i++) {
-            calculateProfit(currentPrices[i]);
+            calculateStatistics(currentPrices[i]);
         }
         for (let i = 0; i < coins.length; i++) {
             let coin = coins[i];
-            console.log(coin.name);
-            console.log("original price: $" + coin.purchasePrice);
-            console.log("current price: $" + coin.currentPrice);
-            console.log("original value: $" + coin.originalValue);
-            console.log("current value: $" + coin.currentValue);
-            console.log("Change in price = " + coin.changeInValue + "%");
-            console.log("Profit made = $" + coin.profitMade + "\n");
+            displayDiv.innerHTML += coin.name;
+            displayDiv.innerHTML += "buy price: $" + coin.purchasePrice;
+            displayDiv.innerHTML += "current price: $" + coin.currentPrice;
+            displayDiv.innerHTML += "buy value: $" + coin.originalValue;
+            displayDiv.innerHTML += "current value: $" + coin.currentValue;
+            displayDiv.innerHTML += "Change in price = " + coin.changeInValue + "%";
+            displayDiv.innerHTML += "Profit made = $" + coin.profitMade + "\n";
             totalProfit += Number(coin.profitMade);
         }
-        console.log("\n$" + parseFloat(totalProfit).toFixed(2));
+        displayDiv.innerHTML += "\nTotal profit = $" + parseFloat(totalProfit).toFixed(2);
     })
     .catch(err => {
-        console.log(err);
+        displayDiv.innerHTML += err;
     });
 
 

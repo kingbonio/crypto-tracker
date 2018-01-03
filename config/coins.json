@@ -1,21 +1,32 @@
 [
     {
-        // Be better to use just the coin name and refer that in the URI
         "name": "utrust",
-        "uri": "https://api.coinmarketcap.com/v1/ticker/utrust/",
         "purchasePrice": "0.06",
         "volume": "1799"
     },
     {
         "name": "ethos",
-        "uri": "https://api.coinmarketcap.com/v1/ticker/ethos/",
+        "purchasePrice": "2.50",
+        "volume": "25"
+    },
+    {
+        "name": "ethos",
         "purchasePrice": "0.98",
         "volume": "122"
     },
     {
-        "name": "b3",
-        "uri": "https://api.coinmarketcap.com/v1/ticker/b3coin/",
+        "name": "b3coin",
         "purchasePrice": "0.00017",
         "volume": "404000"
+    },
+    {
+        "name": "cardano",
+        "purchasePrice": "0.12",
+        "volume": "99.26"
+    },
+    {
+        "name": "stellar",
+        "purchasePrice": "0.14",
+        "volume": "84.04"
     }
 ]
